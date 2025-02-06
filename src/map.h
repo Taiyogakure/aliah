@@ -3,9 +3,9 @@
 
 #include <SDL2/SDL.h>
 
-#define MAP_WIDTH 10
-#define MAP_HEIGHT 5
-#define TILE_SIZE 40
+#define MAP_WIDTH 80
+#define MAP_HEIGHT 80
+#define TILE_SIZE 8
 
 extern char gameMap[MAP_HEIGHT][MAP_WIDTH + 1];
 
