@@ -1,0 +1,64 @@
+// {
+//     "configurations": [
+//         {
+//             "name": "Linux",
+//             "includePath": [
+//                 "${workspaceFolder}/**"
+//             ],
+//             "defines": [],
+//             "compilerPath": "/usr/local/emsdk/upstream/bin/clang",
+//             "cStandard": "c17",
+//             "cppStandard": "c++17",
+//             "intelliSenseMode": "linux-clang-x64"
+//         }
+//     ],
+//     "version": 4
+// }
+// {
+//     "configurations": [
+//         {
+//             "name": "Emscripten",
+//             "includePath": [
+//                 "${workspaceFolder}/**", // Include your project's headers
+//                 "/path/to/your/emscripten/system/include" // The crucial Emscripten include path
+//             ],
+//             "defines": [
+//                 "_DEBUG",
+//                 "__EMSCRIPTEN__" // Important for Emscripten projects
+//             ],
+//             "compilerPath": "/usr/local/emsdk/upstream/bin/clang", // Or the path to your emcc compiler
+//             "cStandard": "c99", // Or your preferred C standard
+//             "cppStandard": "c++17", // Or your preferred C++ standard
+//             "intelliSenseMode": "linux-gcc-x64" // Or your preferred IntelliSense mode
+//         }
+//     ],
+//     "version": 4
+// }
+{
+    "configurations": [
+        {
+            "name": "Emscripten",
+            "intelliSenseMode": "clang-x64",
+            "compilerPath": "/usr/local/emsdk/upstream/bin/clang",
+            "cStandard": "c99",
+            "cppStandard": "c++17",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/usr/local/emsdk/upstream/emscripten/cache/sysroot/include",
+                "/usr/include/SDL2"
+            ],
+            "defines": [
+                "__EMSCRIPTEN__"
+            ],
+            "browse": {
+                "path": [
+                    "${workspaceFolder}",
+                    "/usr/local/emsdk/upstream/emscripten/cache/sysroot/include",
+                    "/usr/include/SDL2"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
+        }
+    ],
+    "version": 4
+}
