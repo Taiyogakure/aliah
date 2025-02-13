@@ -7,9 +7,14 @@
 #define MAP_HEIGHT 80
 #define TILE_SIZE 8
 
-extern char gameMap[MAP_HEIGHT][MAP_WIDTH + 1];
+// The binary map: each element is one byte (tile index)
+extern unsigned char gameMap[MAP_HEIGHT][MAP_WIDTH];
 
-void loadMap(const char *filePath);
+extern SDL_Texture *tilesetTexture;
+
+int initTileset(SDL_Renderer *renderer, const char *tilesetPath);
+
+int loadMap(const char *filePath);
 void renderMap(SDL_Renderer *renderer);
 
 #endif

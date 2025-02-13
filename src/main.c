@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <emscripten.h>
 #include "map.h"
 #include "player.h"
@@ -35,17 +36,33 @@ int main(int argc, char *argv[]) {
         printf("SDL_Init Error: %s\n", SDL_GetError());
         return 1;
     }
+    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+        printf("IMG_Init Error: %s\n", IMG_GetError());
+        return 1;
+    }
 
-    SDL_Window *window = SDL_CreateWindow("Aliah University", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 400, 200, SDL_WINDOW_SHOWN);
+    SDL_Window *window = SDL_CreateWindow("Binary Map with Tileset", 
+                                          SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+                                          MAP_WIDTH * TILE_SIZE, MAP_HEIGHT * TILE_SIZE, 
+                                          SDL_WINDOW_SHOWN);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    loadMap("/assets/maps/map1.txt");
-    initPlayer(&player);
+    // Initialize the tileset texture.
+    if (!initTileset(renderer, "assets/tileset.png")) {
+        printf("Failed to initialize tileset.\n");
+        return 1;
+    }
+    // Load the binary map (map.bin must be 6400 bytes).
+    if (!loadMap("assets/maps/map.bin")) {
+        printf("Failed to load map.\n");
+        return 1;
+    }
 
     emscripten_set_main_loop_arg(main_loop, renderer, 0, 1);
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    IMG_Quit();
     SDL_Quit();
     return 0;
 }

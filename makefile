@@ -4,9 +4,10 @@ BUILD_DIR = build
 
 # Compiler settings
 CC = emcc
-CFLAGS = -s WASM=1 -s USE_SDL=2 -O2 $(FILE_FLAGS) $(ASYNC_FLAGS)
+CFLAGS = -s WASM=1 -s USE_SDL=2 -O2 $(FILE_FLAGS) $(ASYNC_FLAGS) $(IMG_FLAGS)
 FILE_FLAGS = -s FORCE_FILESYSTEM=1 --preload-file assets
 ASYNC_FLAGS = -sASYNCIFY
+IMG_FLAGS = -lSDL2_image
 
 # Target files
 TARGET = $(BUILD_DIR)/index.html

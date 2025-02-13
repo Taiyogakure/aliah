@@ -1,42 +1,56 @@
 #include "map.h"
 #include <stdio.h>
+#include <SDL2/SDL_image.h>
 
-char gameMap[MAP_HEIGHT][MAP_WIDTH + 1];
+unsigned char gameMap[MAP_HEIGHT][MAP_WIDTH];
 
-void loadMap(const char *filePath) {
-    FILE *file = fopen(filePath, "r");
-    if (file == NULL) {
-        printf("Error: Unable to load map from %s\n", filePath);
-        return;
+SDL_Texture *tilesetTexture = NULL;
+
+int initTileset(SDL_Renderer *renderer, const char *tilesetPath) {
+    SDL_Surface *surface = IMG_Load(tilesetPath);
+    if (!surface) {
+        printf("Error loading tileset '%s': %s\n", tilesetPath, IMG_GetError());
+        return 0;
     }
-
-    for (int i = 0; i < MAP_HEIGHT; i++) {
-        if (fgets(gameMap[i], MAP_WIDTH + 2, file) == NULL) {  // +2 for newline and null terminator
-            break;
-        }
+    tilesetTexture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+    if (!tilesetTexture) {
+        printf("Error creating texture from surface: %s\n", SDL_GetError());
+        return 0;
     }
+    return 1;
+}
 
+int loadMap(const char *filePath) {
+    FILE *file = fopen(filePath, "rb");
+    if (!file) {
+        printf("Error: Unable to open map file '%s'\n", filePath);
+        return 0;
+    }
+    size_t bytesRead = fread(gameMap, sizeof(unsigned char), MAP_WIDTH * MAP_HEIGHT, file);
     fclose(file);
+    if (bytesRead != MAP_WIDTH * MAP_HEIGHT) {
+        printf("Error: Map file '%s' size mismatch. Expected %d bytes, got %zu bytes\n", filePath, MAP_WIDTH * MAP_HEIGHT, bytesRead);
+        return 0;
+    }
+    return 1;
 }
 
 void renderMap(SDL_Renderer *renderer) {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
+    SDL_Rect srcRect, dstRect;
+    srcRect.w = TILE_SIZE;
+    srcRect.h = TILE_SIZE;
+    dstRect.w = TILE_SIZE;
+    dstRect.h = TILE_SIZE;
 
     for (int y = 0; y < MAP_HEIGHT; y++) {
         for (int x = 0; x < MAP_WIDTH; x++) {
-            if (gameMap[y][x] == '#') {
-                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-            } else if (gameMap[y][x] == 'E') {
-                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-            } else if (gameMap[y][x] == 'O') {
-                SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-            } else {
-                continue;
-            }
-
-            SDL_Rect rect = {x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE};
-            SDL_RenderFillRect(renderer, &rect);
+            unsigned char tileIndex = gameMap[y][x];
+            srcRect.x = tileIndex * TILE_SIZE;
+            srcRect.y = 0;
+            dstRect.x = x * TILE_SIZE;
+            dstRect.y = y * TILE_SIZE;
+            SDL_RenderCopy(renderer, tilesetTexture, &srcRect, &dstRect);
         }
     }
 }
